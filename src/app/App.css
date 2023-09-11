@@ -1,0 +1,32 @@
+/* styles.css */
+
+.layout {
+  min-height: 100vh; /* Make sure the layout takes up at least the full viewport height */
+}
+
+.site-layout-content {
+  background-color: #ffffff; /* Set a white background color for the content area */
+  padding: 24px; /* Add some padding around the content */
+}
+
+.site-layout-content p {
+  font-size: 18px; /* Set the font size for paragraphs in the content */
+}
+
+.ant-menu {
+  background-color: #001529; /* Set a dark blue background color for the menu */
+}
+
+.ant-menu-item-selected {
+  background-color: #1890ff; /* Set a lighter blue background color for selected menu items */
+}
+
+.ant-menu-item a {
+  color: #ffffff; /* Set the text color for menu items */
+}
+
+.ant-layout-footer {
+  background-color: #001529; /* Set a dark blue background color for the footer */
+  color: #ffffff; /* Set the text color for the footer */
+  text-align: center; /* Center-align text in the footer */
+}
