@@ -8,7 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "./App.css";
 import { logout, setUser } from "../slices/authSlice";
-
+import TasksTable from "../views/Task";
+import TaskHistory from "../views/Task/taskHistory";
 import ProjectTable from "../views/Project";
 
 const { Header, Content, Footer } = Layout;
@@ -87,7 +88,14 @@ const App = () => {
           ) : (
             <Routes>
               <Route path="/Projects" element={<ProjectTable />} />
-
+              <Route
+                path="/Projects/:projectId/tasks"
+                element={<TasksTable />}
+              />
+              <Route
+                path="/Projects/:projectId/tasks/:taskId"
+                element={<TaskHistory />}
+              />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           )}
