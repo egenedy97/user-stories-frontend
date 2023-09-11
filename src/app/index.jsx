@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 import "./App.css";
 import { logout, setUser } from "../slices/authSlice";
 
+import ProjectTable from "../views/Project";
+
 const { Header, Content, Footer } = Layout;
 
 const App = () => {
@@ -55,6 +57,10 @@ const App = () => {
             mode="horizontal"
             defaultSelectedKeys={[selectedKey]}
           >
+            <Menu.Item key="1">
+              <Link to="/Projects">Projects</Link>
+            </Menu.Item>
+
             <Menu.Item key="3">
               <Button
                 onClick={() => {
@@ -80,6 +86,8 @@ const App = () => {
             </Routes>
           ) : (
             <Routes>
+              <Route path="/Projects" element={<ProjectTable />} />
+
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           )}
