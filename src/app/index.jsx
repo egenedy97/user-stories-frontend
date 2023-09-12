@@ -8,12 +8,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "./App.css";
 import { logout, setUser } from "../slices/authSlice";
+import TasksTable from "../views/Task";
+import TaskHistory from "../views/Task/taskHistory";
+import ProjectTable from "../views/Project";
 
 const { Header, Content, Footer } = Layout;
 
 const App = () => {
   const isAuth = useSelector((state) => state.auth.isAuth);
-  const [selectedKey, setSelectedKey] = useState("1");
+  const [selectedKey, setSelectedKey] = useState("2");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
@@ -29,7 +32,6 @@ const App = () => {
     if (!user) {
       dispatch(logout());
       setSelectedKey("2");
-      navigate("/Login");
     }
   }, [dispatch, isAuth, navigate]);
 
@@ -55,6 +57,10 @@ const App = () => {
             mode="horizontal"
             defaultSelectedKeys={[selectedKey]}
           >
+            <Menu.Item key="2">
+              <Link to="/Projects">Projects</Link>
+            </Menu.Item>
+
             <Menu.Item key="3">
               <Button
                 onClick={() => {
@@ -80,6 +86,15 @@ const App = () => {
             </Routes>
           ) : (
             <Routes>
+              <Route path="/Projects" element={<ProjectTable />} />
+              <Route
+                path="/Projects/:projectId/tasks"
+                element={<TasksTable />}
+              />
+              <Route
+                path="/Projects/:projectId/tasks/:taskId"
+                element={<TaskHistory />}
+              />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           )}
