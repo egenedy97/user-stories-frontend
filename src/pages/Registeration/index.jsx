@@ -14,7 +14,7 @@ const RegistrationForm = () => {
 
     try {
       await dispatch(register(values));
-      await navigate("/Projects");
+      await navigate("/Login");
       message.success("Registration successful");
     } catch (error) {
       console.error("Error registering user:", error);

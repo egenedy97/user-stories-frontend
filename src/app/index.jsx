@@ -16,7 +16,7 @@ const { Header, Content, Footer } = Layout;
 
 const App = () => {
   const isAuth = useSelector((state) => state.auth.isAuth);
-  const [selectedKey, setSelectedKey] = useState("1");
+  const [selectedKey, setSelectedKey] = useState("2");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
@@ -32,7 +32,6 @@ const App = () => {
     if (!user) {
       dispatch(logout());
       setSelectedKey("2");
-      navigate("/Login");
     }
   }, [dispatch, isAuth, navigate]);
 
@@ -58,7 +57,7 @@ const App = () => {
             mode="horizontal"
             defaultSelectedKeys={[selectedKey]}
           >
-            <Menu.Item key="1">
+            <Menu.Item key="2">
               <Link to="/Projects">Projects</Link>
             </Menu.Item>
 
