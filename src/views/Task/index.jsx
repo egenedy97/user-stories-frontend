@@ -63,6 +63,13 @@ const TaskTable = () => {
       title: "Description",
       dataIndex: "description",
       key: "description",
+      render: (text) => (
+        <div
+          style={{ maxWidth: "200px", overflow: "auto", maxHeight: "100px" }}
+        >
+          {text}
+        </div>
+      ),
     },
     {
       title: "Status",
