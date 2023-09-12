@@ -18,7 +18,7 @@ const TaskTable = () => {
 
   const [pagination, setPagination] = useState({
     current: 1,
-    defaultPageSize: 10,
+    defaultPageSize: 100,
     total: 0,
   });
 
@@ -30,6 +30,7 @@ const TaskTable = () => {
     });
   };
   const showModal = () => {
+    setSelectedTask(null);
     setIsModalVisible(true);
   };
 
@@ -38,7 +39,7 @@ const TaskTable = () => {
     dispatch(
       getAllTasks(projectId, pagination.current, pagination.defaultPageSize)
     );
-  }, [dispatch, pagination, projectId]);
+  }, [dispatch, projectId]);
   const columns = [
     {
       title: "ID",
@@ -112,8 +113,9 @@ const TaskTable = () => {
         return (
           <Button
             onClick={() => {
-              setSelectedTask(row);
-              showModal();
+              const selectedTask = tasks.filter((item) => row.id === item.id);
+              setSelectedTask(selectedTask[0]);
+              setIsModalVisible(true);
             }}
           >
             Edit
@@ -134,20 +136,24 @@ const TaskTable = () => {
         pagination={pagination}
         onChange={handleTableChange}
       />
-      {selectedTask ? (
-        <TaskForm
-          visible={isModalVisible}
-          projectId={projectId}
-          setVisible={setIsModalVisible}
-          task={selectedTask}
-        />
-      ) : (
-        <TaskForm
-          visible={isModalVisible}
-          projectId={projectId}
-          setVisible={setIsModalVisible}
-        />
-      )}
+      {selectedTask
+        ? isModalVisible && (
+            <TaskForm
+              visible={isModalVisible}
+              projectId={projectId}
+              setVisible={setIsModalVisible}
+              task={selectedTask}
+              dispatch={dispatch}
+            />
+          )
+        : isModalVisible && (
+            <TaskForm
+              visible={isModalVisible}
+              projectId={projectId}
+              setVisible={setIsModalVisible}
+              dispatch={dispatch}
+            />
+          )}
     </>
   );
 };
