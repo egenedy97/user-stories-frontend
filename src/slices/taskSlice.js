@@ -5,12 +5,14 @@ import taskServices from "../services/task";
 const initialState = {
   tasks: [],
   error: null,
+  total: 0,
 };
 
 export const getAllTasks = (projectId, page, limit) => async (dispatch) => {
   try {
     const response = await taskServices.getAllTasks(projectId, page, limit);
     dispatch(setTasks(response?.tasks));
+    dispatch(setTotal(response?.total));
   } catch (error) {
     console.error(error);
     dispatch(setError(error.message)); // Set the error in the state
@@ -67,6 +69,9 @@ const taskSlice = createSlice({
     addTask: (state, action) => {
       state.tasks.push(action.payload);
     },
+    setTotal: (state, action) => {
+      state.total = action.payload;
+    },
     updateTaskSuccess: (state, action) => {
       const updatedTask = action.payload;
       const index = state.tasks.findIndex((task) => task.id === updatedTask.id);
@@ -77,7 +82,7 @@ const taskSlice = createSlice({
   },
 });
 
-export const { setTasks, setError, addTask, updateTaskSuccess } =
+export const { setTasks, setError, addTask, updateTaskSuccess, setTotal } =
   taskSlice.actions;
 
 export default taskSlice.reducer;
