@@ -9,22 +9,28 @@ const ProjectTable = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const dispatch = useDispatch();
   const projects = useSelector((state) => state?.projects?.projects);
-
+  const total = useSelector((state) => state?.projects?.total);
   const [pagination, setPagination] = useState({
     current: 1,
-    defaultPageSize: 100,
-    total: 0,
+    pageSize: 2,
+    total: total,
   });
+  useEffect(() => {
+    setPagination({
+      ...pagination,
+      total,
+    });
+  }, [total]);
 
   useEffect(() => {
-    dispatch(fetchProjects(pagination.current, pagination.defaultPageSize));
+    dispatch(fetchProjects(pagination.current, pagination.pageSize));
   }, [dispatch, pagination]);
 
   const handleTableChange = (pagination) => {
     setPagination({
       ...pagination,
       current: pagination.current,
-      defaultPageSize: pagination.pageSize,
+      pageSize: pagination.pageSize,
     });
   };
 
@@ -58,6 +64,7 @@ const ProjectTable = () => {
         dataSource={projects}
         pagination={pagination} // Pass the pagination object
         onChange={handleTableChange} // Handle table pagination change
+        rowKey={(row) => row}
       />
       <ProjectForm visible={isModalVisible} setVisible={setIsModalVisible} />
     </div>
