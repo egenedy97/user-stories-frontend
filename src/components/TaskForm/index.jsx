@@ -1,17 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Form, Input, Select } from "antd";
-import { useDispatch } from "react-redux";
-import { createTask } from "../../slices/taskSlice";
+import { stateTransitions } from "../../constants";
+import { createTask, updateTask } from "../../slices/taskSlice";
+import userServices from "../../services/user";
 
-const TaskForm = ({ visible, setVisible, projectId, task }) => {
+const { Option } = Select;
+const TaskForm = ({ visible, setVisible, projectId, task, dispatch }) => {
   const [form] = Form.useForm();
-  const dispatch = useDispatch();
-
-  const isEdit = !!task; // Check if it's an edit operation
+  const [users, setUsers] = useState([]);
+  const isEdit = task?.id ? true : false;
 
   const onFinish = (values) => {
+    const { title, description, assignedToId, status } = values;
     if (isEdit) {
-      //   dispatch(updateTask({ id, ...values }));
+      dispatch(
+        updateTask(projectId, task?.id, {
+          title,
+          description,
+          assignedToId: +assignedToId,
+          status: task?.status === status ? undefined : status,
+        })
+      );
     } else {
       dispatch(createTask(projectId, values));
     }
@@ -19,6 +28,23 @@ const TaskForm = ({ visible, setVisible, projectId, task }) => {
     setVisible(false);
   };
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await userServices.getAllUsers(1, 100);
+        setUsers(response?.users);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    if (visible) {
+      fetchUsers();
+    }
+    form.setFieldsValue({
+      ...task,
+    });
+  }, [visible]);
   return (
     <Modal
       title={isEdit ? "Edit Task" : "Create Task"}
@@ -27,7 +53,10 @@ const TaskForm = ({ visible, setVisible, projectId, task }) => {
         form.resetFields();
         setVisible(false);
       }}
-      onOk={() => form.submit()}
+      onOk={() => {
+        form.submit();
+      }}
+      destroyOnClose={true}
     >
       <Form form={form} name="myForm" onFinish={onFinish} initialValues={task}>
         <Form.Item
@@ -57,40 +86,34 @@ const TaskForm = ({ visible, setVisible, projectId, task }) => {
         </Form.Item>
 
         {isEdit && (
-          <>
-            <Form.Item
-              label="Assigned To"
-              name="assignedTo"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select an assignee!",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
+          <Form.Item label="assignedTo" name={"assignedToId"}>
+            <Select>
+              {users.map((item) => (
+                <Option value={item?.id} key={item?.id}>
+                  {item?.username}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        )}
 
-            <Form.Item
-              label="Status"
-              name="status"
-              rules={[
-                {
-                  required: true,
-                  message: "Please select a status!",
-                },
-              ]}
-            >
-              <Select>
-                <Select.Option value="ToDo">ToDo</Select.Option>
-                <Select.Option value="InProgress">InProgress</Select.Option>
-                <Select.Option value="InQA">InQA</Select.Option>
-                <Select.Option value="Done">Done</Select.Option>
-                <Select.Option value="Deployed">Deployed</Select.Option>
-                <Select.Option value="Blocked">Blocked</Select.Option>
-              </Select>
-            </Form.Item>
-          </>
+        {isEdit && task && (
+          <Form.Item
+            label="Status"
+            name="status"
+            rules={[
+              {
+                required: true,
+                message: "Please select a status!",
+              },
+            ]}
+          >
+            <Select>
+              {stateTransitions[task.status].map((item) => {
+                return <Option value={item}>{item}</Option>;
+              })}
+            </Select>
+          </Form.Item>
         )}
       </Form>
     </Modal>
