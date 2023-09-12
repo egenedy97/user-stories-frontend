@@ -13,18 +13,26 @@ export const fetchProjects = (page, limit) => async (dispatch) => {
     const response = await projectsService.getAllProjects(page, limit);
     dispatch(setProjects(response?.projects));
     dispatch(setTotal(response?.total));
+    if (!response?.projects) {
+      throw new Error("failed to fetch projects");
+    }
   } catch (error) {
-    console.error(error);
+    message.error("failed to fetch projects");
+    throw new Error(error.message);
   }
 };
 
 export const createProject = (projectData) => async (dispatch) => {
   try {
     const response = await projectsService.createProject(projectData);
+    if (!response.project) {
+      throw new Error("failed to create project");
+    }
     dispatch(addProject(response?.project));
     await message.success("Project Created Successful");
   } catch (error) {
-    console.error(error);
+    message.error("failed to create project");
+    throw new Error(error.message);
   }
 };
 

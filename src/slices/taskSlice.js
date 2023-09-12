@@ -13,20 +13,27 @@ export const getAllTasks = (projectId, page, limit) => async (dispatch) => {
     const response = await taskServices.getAllTasks(projectId, page, limit);
     dispatch(setTasks(response?.tasks));
     dispatch(setTotal(response?.total));
+    if (!response?.tasks) {
+      throw new Error("failed to fetch tasks");
+    }
   } catch (error) {
-    console.error(error);
-    dispatch(setError(error.message)); // Set the error in the state
+    message.error("failed to fetch tasks");
+    throw new Error(error.message);
   }
 };
 
 export const createTask = (projectId, taskData) => async (dispatch) => {
   try {
     const response = await taskServices.createTask(projectId, taskData);
+    if (!response.task) {
+      throw new Error("failed to create task");
+    }
     dispatch(addTask(response?.task));
     await message.success("Task Created Successful");
   } catch (error) {
-    console.error(error);
-    dispatch(setError(error.message)); // Set the error in the state
+    message.error("failed to create project");
+
+    throw new Error(error.message);
   }
 };
 
@@ -36,7 +43,6 @@ export const getTaskById = (projectId, taskId) => async (dispatch) => {
     dispatch(setTasks([response?.task]));
   } catch (error) {
     console.error(error);
-    dispatch(setError(error.message)); // Set the error in the state
   }
 };
 
@@ -52,7 +58,6 @@ export const updateTask =
       await message.success("Task Updated Successfully");
     } catch (error) {
       console.error(error);
-      dispatch(setError(error.message)); // Set the error in the state
     }
   };
 
@@ -82,7 +87,7 @@ const taskSlice = createSlice({
   },
 });
 
-export const { setTasks, setError, addTask, updateTaskSuccess, setTotal } =
+export const { setTasks, addTask, updateTaskSuccess, setTotal } =
   taskSlice.actions;
 
 export default taskSlice.reducer;
