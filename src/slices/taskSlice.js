@@ -4,6 +4,7 @@ import taskServices from "../services/task";
 
 const initialState = {
   tasks: [],
+  error: null,
 };
 
 export const getAllTasks = (projectId, page, limit) => async (dispatch) => {
@@ -12,6 +13,7 @@ export const getAllTasks = (projectId, page, limit) => async (dispatch) => {
     dispatch(setTasks(response?.tasks));
   } catch (error) {
     console.error(error);
+    dispatch(setError(error.message)); // Set the error in the state
   }
 };
 
@@ -22,6 +24,7 @@ export const createTask = (projectId, taskData) => async (dispatch) => {
     await message.success("Task Created Successful");
   } catch (error) {
     console.error(error);
+    dispatch(setError(error.message)); // Set the error in the state
   }
 };
 
@@ -31,16 +34,23 @@ export const getTaskById = (projectId, taskId) => async (dispatch) => {
     dispatch(setTasks([response?.task]));
   } catch (error) {
     console.error(error);
+    dispatch(setError(error.message)); // Set the error in the state
   }
 };
 
 export const updateTask =
-  (projectId, taskId, Credential) => async (dispatch) => {
+  (projectId, taskId, updatedData) => async (dispatch) => {
     try {
-      const response = await taskServices.getTaskById(projectId, taskId);
-      dispatch(setTasks([response?.task]));
+      const response = await taskServices.updateTask(
+        projectId,
+        taskId,
+        updatedData
+      );
+      dispatch(updateTaskSuccess(response?.task));
+      await message.success("Task Updated Successfully");
     } catch (error) {
       console.error(error);
+      dispatch(setError(error.message)); // Set the error in the state
     }
   };
 
@@ -57,9 +67,17 @@ const taskSlice = createSlice({
     addTask: (state, action) => {
       state.tasks.push(action.payload);
     },
+    updateTaskSuccess: (state, action) => {
+      const updatedTask = action.payload;
+      const index = state.tasks.findIndex((task) => task.id === updatedTask.id);
+      if (index !== -1) {
+        state.tasks[index] = updatedTask;
+      }
+    },
   },
 });
 
-export const { setTasks, setError, addTask } = taskSlice.actions;
+export const { setTasks, setError, addTask, updateTaskSuccess } =
+  taskSlice.actions;
 
 export default taskSlice.reducer;
