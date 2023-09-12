@@ -16,17 +16,25 @@ const TaskTable = () => {
   };
   const [selectedTask, setSelectedTask] = useState(null);
 
+  const tasks = useSelector((state) => state?.tasks?.tasks);
+  const total = useSelector((state) => state?.tasks?.total);
+
+  useEffect(() => {
+    setPagination({
+      ...pagination,
+      total,
+    });
+  }, [total]);
   const [pagination, setPagination] = useState({
     current: 1,
-    defaultPageSize: 100,
-    total: 0,
+    pageSize: 3,
+    total: total,
   });
-
   const handleTableChange = (pagination) => {
     setPagination({
       ...pagination,
       current: pagination.current,
-      defaultPageSize: pagination.pageSize,
+      pageSize: pagination.pageSize,
     });
   };
   const showModal = () => {
@@ -34,12 +42,9 @@ const TaskTable = () => {
     setIsModalVisible(true);
   };
 
-  const tasks = useSelector((state) => state?.tasks?.tasks);
   useEffect(() => {
-    dispatch(
-      getAllTasks(projectId, pagination.current, pagination.defaultPageSize)
-    );
-  }, [dispatch, projectId]);
+    dispatch(getAllTasks(projectId, pagination.current, pagination.pageSize));
+  }, [dispatch, pagination]);
   const columns = [
     {
       title: "ID",

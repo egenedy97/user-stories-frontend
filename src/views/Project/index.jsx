@@ -15,6 +15,12 @@ const ProjectTable = () => {
     pageSize: 2,
     total: total,
   });
+  useEffect(() => {
+    setPagination({
+      ...pagination,
+      total,
+    });
+  }, [total]);
 
   useEffect(() => {
     dispatch(fetchProjects(pagination.current, pagination.pageSize));
